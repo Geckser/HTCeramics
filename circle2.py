@@ -61,3 +61,7 @@ ax.imshow(image) #This loads the edited image into the environment
 alt.show() #this takes the uploaded image and displays it for the user
 
 if save == True:
+    io.save(saveas,image)
+    print(f"Image saved as {saveas}.")
+    else
+    quit()
