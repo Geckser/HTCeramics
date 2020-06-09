@@ -12,7 +12,13 @@ from skimage.draw import circle_perimeter
 from skimage.util import img_as_ubyte
 from skimage.color import rgb2gray
 
-script, target = sys.argv
+# When calling the function, target is the file you want to analyze, save is y|n, saveas is the filename you'd like to save the new image as.
+# This is to compare color out vs color in.
+# Comment this line out if you do not want to save the image.
+script, target, save, saveas = sys.argv
+
+# Comment this line out if you want to save the image.
+# script, target = sys.argv
 
 # Read in an image from the directory specified when you call the function in Python
 img = io.imread(target)
@@ -53,3 +59,5 @@ for center_y, center_x, radius in zip(y, x, radius): #This for loop draws the ci
 ax.imshow(image) #This loads the edited image into the environment
 
 alt.show() #this takes the uploaded image and displays it for the user
+
+if save == True:
