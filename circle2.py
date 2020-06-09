@@ -1,0 +1,55 @@
+import sys
+import matplotlib.pyplot as alt
+import matplotlib
+import numpy as np
+
+import skimage
+from skimage import io, data, measure, morphology, color
+
+from skimage.transform import hough_circle, hough_circle_peaks
+from skimage.feature import canny
+from skimage.draw import circle_perimeter
+from skimage.util import img_as_ubyte
+from skimage.color import rgb2gray
+
+script, target = sys.argv
+
+# Read in an image from the directory specified when you call the function in Python
+img = io.imread(target)
+
+grayscale = rgb2gray(img) #To use the later image analyis, the initial image must be converted to grayscale
+
+image = img_as_ubyte(grayscale[0:2300, 0:2300])#converts the image to a specific file format that can later be analysed
+#the array after 'grayscale' holds the size of the image.
+
+edges = canny(image, sigma=3, low_threshold=25, high_threshold=50) #canny identifies any edges on the shape
+#sigma is required standard deviation, low and high threshold are the bounds for linking edges
+#It is recommended that you use 10% of the max possible cirlce size for the low_threshold and twice that for the high threshold
+
+h_radii = np.arange(350, 500, 5) #The first two are used to identify the high and low end of radii to search for
+#This will need to be adjusted as different files are uploaded.
+
+hough_res = hough_circle(edges, h_radii) #function that calculates a 3D array where a very similar circle can live.
+#It takes in the number of pixels that will be used to create the
+
+
+print("Analysis almost complete...")
+
+accums, x, y, radius = hough_circle_peaks(hough_res, h_radii, total_num_peaks=1)
+#the hough_cirlce_peaks function takes the imaginary 'hough circle', the anticipated radii, and the anticiapted number of circles
+# it uses this to find the Peak values in 'hough space', the positions of the circles and the radii of the circles
+
+print(radius)
+#Prints the radii of the identified circles
+
+fig, ax = alt.subplots(ncols=1, nrows=1, figsize=(10, 4))
+image = color.gray2rgb(image)
+for center_y, center_x, radius in zip(y, x, radius): #This for loop draws the circles that were generated earlier
+    circy, circx = circle_perimeter(center_y, center_x, radius,
+                                    shape=image.shape)
+    image[circy, circx] = (220, 20, 20)
+
+
+ax.imshow(image) #This loads the edited image into the environment
+
+alt.show() #this takes the uploaded image and displays it for the user
