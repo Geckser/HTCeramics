@@ -23,6 +23,7 @@ from skimage.color import rgb2gray
 script, target = sys.argv
 print('Do you wnat to edit any of the parameters? (y/n)')
 yes_no = input()
+#
 if yes_no == 'y':
     number_of_circles = input('How many circles are present?')
     max_radius = input('What is the maximum radius')
@@ -32,6 +33,7 @@ else:
     max_radius = 500
     min_radius = 250
 # Read in an image from the directory specified when you call the function in Python
+
 img = io.imread(target)
 xc, yc, t = img.data.shape
 
