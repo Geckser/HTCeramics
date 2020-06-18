@@ -1,10 +1,8 @@
-
-
 import sys
 import matplotlib.pyplot as alt
 import matplotlib
 import numpy as np
-
+import math
 import skimage
 from skimage import io, data, measure, morphology, color
 
@@ -26,12 +24,12 @@ yes_no = input()
 #
 if yes_no == 'y':
     number_of_circles = input('How many circles are present?')
-    max_radius = input('What is the maximum radius')
-    min_radius = input('What is the minimum radius')
+    int(max_radius = input('What is the maximum radius'))
+    int(min_radius = input('What is the minimum radius'))
 else:
     number_of_circles = 1
     max_radius = 500
-    min_radius = 250
+    min_radius = 100
 # Read in an image from the directory specified when you call the function in Python
 
 img = io.imread(target)
@@ -47,7 +45,7 @@ edges = canny(image, sigma=3, low_threshold=max_radius*.1, high_threshold=max_ra
 # sigma is required standard deviation, low and high threshold are the bounds for linking edges
 # It is recommended that you use 10% of the max possible cirlce size for the low_threshold and twice that for the high threshold
 
-h_radii = np.arange(min_radius, max_radius, 5)  # The first two are used to identify the high and low end of radii to search for
+h_radii = np.arange(min_radius, max_radius, 1)  # The first two are used to identify the high and low end of radii to search for
 # This will need to be adjusted as different files are uploaded.
 
 hough_res = hough_circle(edges, h_radii)  # function that calculates a 3D array where a very similar circle can live.
@@ -61,6 +59,8 @@ accums, x, y, radius = hough_circle_peaks(hough_res, h_radii, total_num_peaks=nu
 # it uses this to find the Peak values in 'hough space', the positions of the circles and the radii of the circles
 
 print(radius)
+area = 3.1415926535897984626 *radius *radius
+print("area is: ", area)
 # Prints the radii of the identified circles
 
 fig, ax = alt.subplots(ncols=1, nrows=1, figsize=(10, 4))
