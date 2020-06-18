@@ -24,8 +24,8 @@ yes_no = input()
 #
 if yes_no == 'y':
     number_of_circles = input('How many circles are present?')
-    int(max_radius = input('What is the maximum radius'))
-    int(min_radius = input('What is the minimum radius'))
+    max_radius = input('What is the maximum radius')
+    min_radius = input('What is the minimum radius')
 else:
     number_of_circles = 1
     max_radius = 500
