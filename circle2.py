@@ -21,7 +21,7 @@ from skimage.color import rgb2gray
 script, target = sys.argv
 print('Do you wnat to edit any of the parameters? (y/n)')
 yes_no = input()
-#
+
 if yes_no == 'y':
     number_of_circles =int(input('How many circles are present?'))
     max_radius = int(input('What is the maximum radius'))
