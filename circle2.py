@@ -23,14 +23,14 @@ print('Do you wnat to edit any of the parameters? (y/n)')
 yes_no = input()
 #
 if yes_no == 'y':
-    number_of_circles = input('How many circles are present?')
-    max_radius = input('What is the maximum radius')
-    min_radius = input('What is the minimum radius')
+    number_of_circles =int(input('How many circles are present?'))
+    max_radius = int(input('What is the maximum radius'))
+    min_radius =int(input('What is the minimum radius'))
 else:
     number_of_circles = 1
-    max_radius = 500
-    min_radius = 100
-# Read in an image from the directory specified when you call the function in Python
+    max_radius = 800
+    min_radius = 50
+    # Read in an image from the directory specified when you call the function in Python
 
 img = io.imread(target)
 xc, yc, t = img.data.shape
@@ -58,7 +58,7 @@ accums, x, y, radius = hough_circle_peaks(hough_res, h_radii, total_num_peaks=nu
 # the hough_cirlce_peaks function takes the imaginary 'hough circle', the anticipated radii, and the anticiapted number of circles
 # it uses this to find the Peak values in 'hough space', the positions of the circles and the radii of the circles
 
-print(radius)
+print("radius is:", radius)
 area = 3.1415926535897984626 *radius *radius
 print("area is: ", area)
 # Prints the radii of the identified circles
