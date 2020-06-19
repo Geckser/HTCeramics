@@ -1,0 +1,7 @@
+# Ignore all .a files, generally archives
+*.a
+
+# Ignore all .pdf files
+*.pdf
+
+# Feel free to adjust as necessary -M
