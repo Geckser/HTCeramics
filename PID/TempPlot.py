@@ -3,11 +3,15 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-count = 0
-def readTemp():# this function reads the temperature
-    while True:#this loop ensures the hardware is connected
+
+countList = []
+dataList = []
+hottest = 0
+coldest = 1000
+def readTemp():  # this function reads the temperature
+    while True:  #this loop ensures the hardware is connected
         try:
-            PID = minimalmodbus.Instrument('COM3',1,mode='rtu') #Set port and communication mode
+            PID = minimalmodbus.Instrument('COM3', 1, mode='rtu') #Set port and communication mode
             break
         except IOError:
             print('Failed to initialize, try again')
@@ -17,36 +21,40 @@ def readTemp():# this function reads the temperature
     while True:
         try:
             PIDTemperature = PID.read_register(4096,1) #The 4096 is the decimal command of the hexidecimal command in the manual, the 1 is the number of decimals
+
             break
         except IOError or ValueError:
             print("Failed to read, trying again")
+
     return PIDTemperature
+
 print("The temperature is ",readTemp() )
 
-def init():
-    ax.set_ylim(10,50)
-    ax.set_xlim(0,10000)
-    del xdata[:]
-    del ydata[:]
-    line.set_data(xdata, ydata)
-    return line,
 
-fig, ax = plt.subplots()
-line = ax.plot([],[],lw=2)
-ax.grid()
-xdata, ydata = [], []
+countList = [] # generate an empty list
+dataList = [] # generate an empty list
 
-def run(data):
-    t,y =data
-    xdata.append(t)
-    ydata.append(y)
-    xmin, xmax = ax.get_xlim()
+plt.figure() # initialize a figure from matplotlib
+plt.xlabel('Counts')
+plt.ylabel('Temperature')
+plt.title('Cool title')
 
-    if t >= xmax:
-        ax.set_xlim(xmin, 2*xmax)
-        ax.figure.canvas.draw()
-        line.set_data(xdata,ydata)
-        return line,
-ani =animation.FuncAnimation(fig,run,readTemp,blit=False,interval=10000,repeat=False,init_func=init)
+while True:
+    CurrentTemp = readTemp()
+    countList.append(time.time()) # append the iterator i to countList
+    dataList.append(CurrentTemp) # Make some data by appending the sine of the iterator to the dataList
+    time.sleep(0.25) # wait for 0.25 second
+    plt.plot(countList, dataList, color='green') # plot the data, make it green colored.
+    plt.pause(0.01) # Pause the plot for 0.01 seconds
 
-plt.show()
+    if CurrentTemp > hottest:
+        hottest = CurrentTemp
+        print("The hottest temp has been ", hottest, "C")
+    elif CurrentTemp < coldest:
+        coldest = CurrentTemp
+        print("the coldest temp has been", coldest, "c")
+    else:
+         True
+
+
+
