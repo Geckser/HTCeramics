@@ -47,6 +47,7 @@ while True:
     plt.plot(countList, dataList, color='green') # plot the data, make it green colored.
     plt.pause(0.01) # Pause the plot for 0.01 seconds
 
+
     if CurrentTemp > hottest:
         hottest = CurrentTemp
         print("The hottest temp has been ", hottest, "C")
