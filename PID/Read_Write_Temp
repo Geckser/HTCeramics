@@ -31,7 +31,7 @@ def readTemp():  # this function reads the temperature
 
 
 
-def writeTemp():  # this function reads the temperature
+def writeTemp(goal):  # this function reads the temperature
     while True:  #this loop ensures the hardware is connected
         try:
             PID = minimalmodbus.Instrument('COM3', 1, mode='rtu') #Set port and communication mode
@@ -43,7 +43,7 @@ def writeTemp():  # this function reads the temperature
         time.sleep(.25)
     while True:
         try:
-            TargetTemp = PID.write_register(4097,65.1,1) #The 4097 is the decimal command of the hexidecimal command in the manual, the 1 is the number of decimals
+            TargetTemp = PID.write_register(4097,goal,1) #The 4097 is the decimal command of the hexidecimal command in the manual, the 1 is the number of decimals
 
             break
         except IOError or ValueError:
@@ -52,8 +52,8 @@ def writeTemp():  # this function reads the temperature
     return TargetTemp
 
 
-writeTemp()
-readtemp()
+writeTemp(55.3)
+readTemp()
 print("The temperature is ",readTemp() )
 
 
