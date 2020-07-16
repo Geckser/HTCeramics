@@ -52,7 +52,7 @@ def writeTemp(goal):  # this function reads the temperature
     return TargetTemp
 
 
-writeTemp(55.3)
+writeTemp(22.1)
 readTemp()
 print("The temperature is ",readTemp() )
 
