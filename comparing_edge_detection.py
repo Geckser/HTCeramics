@@ -1,3 +1,5 @@
+# Call this file with the image you want to parse as an argument in the CLI
+
 import numpy
 import matplotlib.pyplot as plt
 
