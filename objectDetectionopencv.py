@@ -3,6 +3,7 @@ from imutils import perspective, contours
 from scipy.spatial import distance as dist
 import numpy as np
 import cv2 as cv
+import tkinter as tk
 import imutils
 
 # # the image you want to use
@@ -14,10 +15,11 @@ import imutils
 from sys import argv
 this_script, image_file, saveas = argv
 
+# When is a contour too small to count? Is a contour a contour, no matter how small?
 contour_threshold = 100
 
 def order_points(points):
-    # Sort based on x coord
+    # Sort based on x coord of given points.
     xSort = points[np.argsort(points[:0]), :]
 
     #take side extremes
@@ -30,12 +32,12 @@ def order_points(points):
 
     # use euclidian geometry... longest distance between our defined
     # top left point (lowest combined corrdinates) is our bottom right point.
-    # otherwise it's hard to tell which is top and which is bottom
+    # otherwise it's hard to tell which is top right and which is bottom
     diag = dist.cdist(topLeft[np.newaxis], rightMost, "euclidian") [0]
     (bottomRight, topRight) = rightMost[np.argsort(diag)[::-1], :]
 
     # return these coordinates for later use - starting at top left anchor
-    # and staying clockwise
+    # and staying clockwise, for my sanity
     return np.array([topLeft, topRight, bottomRight, bottomLeft], dtype="float32")
 
 # now let's test this out on an image.
@@ -44,6 +46,8 @@ image = cv.imread(image_file)
 
 # convert to gray because we need 2D arrays
 gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY) # to do: try scikitimage as well
+# re: skimage... I can't get it to work, so they must be working fundamentally differently.
+
 # this is some fancy stuff... make it harder to detect edges on purpose.
 # in an attempt to compensate for not having real images to test it on rn
 gray_image = cv.GaussianBlur(gray_image, (5, 5), 0)
@@ -62,7 +66,7 @@ contour_list = imutils.grab_contours(contour_list)
 
 # loop over contours
 for (i, j) in enumerate(contour_list):
-    # ignore small contours
+    # ignore too-small contours
     if cv.contourArea(j) < contour_threshold:
         continue
     # we're going to draw a box
@@ -85,8 +89,36 @@ for (i, j) in enumerate(contour_list):
         cv.FONT_HERSHEY_SIMPLEX, 0.55, (0,0,255),2)
         #FONT_HERSHEY_SIMPLEX is the first option in the dropdown
 
+# if the image is bigger than the screen, this will keep it in sight.
+# this really should have its own cv.stuff already.
+def show_image():
+    screen_info = tk.Tk()
+    screen_width = screen_info.winfo_screenwidth()
+    screen_height = screen_info.winfo_screenheight()
+    scale_width = screen_width / image.shape[1]
+    scale_height = screen_height / image.shape[0]
+    scale = min(scale_width, scale_height)
+    # Resized
+    window_width = int(image.shape[1]*scale)
+    window_height = int(image.shape[0]*scale)
+    return window_width, window_height
+    # return window_height
+
+window_width, window_height = show_image()
+
+# Define the winodw title so you don't have to write it out 1000 times.
+window_title = "Press esc to quit, or press s to save as %s" %saveas
+cv.namedWindow(window_title, cv.WINDOW_NORMAL)
+cv.resizeWindow(window_title, show_image())
+cv.moveWindow(window_title, 0, 0)
+
+# # ------ This section exists only for testing
+# cv.imshow(window_title, edged)
+# cv.waitKey(0)
+# # ------ End testing section
+
 # I think I say this too much but ... show us the money
-cv.imshow('Press esc to quit or press s to save as %s' %saveas, image)
+cv.imshow(window_title, image)
 k = cv.waitKey(0)
 if k == 27:         # wait for ESC key to exit
     cv.destroyAllWindows()
