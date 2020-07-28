@@ -22,6 +22,7 @@ def plotData(temperatureSet):
         try:
             PID = minimalmodbus.Instrument('COM3',  1, mode='rtu',  close_port_after_each_call=True) # CHANGE THIS COM PORT!!!!!!
             PID.write_register(4098, 999, 1)
+            PID.write_register(4099, 0, 1)
             break
         except IOError:
             print('Failed to initialize, trying again.')
