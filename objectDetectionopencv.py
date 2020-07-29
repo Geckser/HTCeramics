@@ -41,7 +41,7 @@ def order_points(points):
     return np.array([topLeft, topRight, bottomRight, bottomLeft], dtype="float32")
 
 # now let's test this out on an image.
-# to define this image, head to line 6
+# to define this image, head to line 16
 image = cv.imread(image_file)
 
 # convert to gray because we need 2D arrays
