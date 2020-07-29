@@ -1,0 +1,68 @@
+Using GitHub from the command line interface (CLI) is a more straightforward than
+using either the desktop app or the website upload functionality.
+I'm by NO MEANS a GitHub expert, but here's what I've picked up in my adventures.
+
+GitHub is organized into repositories, which are a place to organize code
+(and other things) into distinct projects. This repo is "HTCeramics".
+http://github.com/JairyJicama/HTCeramics
+The general form for github urls is just github.com/username/repository
+so if you know both of those things, you don't need to open your browser
+to figure out the url.
+
+If you're ever wondering how to do something, try docs.github.com
+
+# Setting up a local repository.
+# Initialize new repository
+If you want to create a NEW repo by initializing it on your machine,
+set up a new folder, with the planned name of the repo, and use
+  $ git init
+You'll also want to add a readme, a .gitignore file, and potentially information
+about licensing, etc. If that's what you're up for, Google is a better resource
+than I am.
+
+If you have files already created, and you're just trying to start a new repo,
+go to that folder, and also use
+  $ git init
+  $ git add .
+This initializes the repo and adds *all* files. See above note about Google.
+
+# Connecting a local folder to an existing repository
+This was the whole reason I made this section, so here we go.
+First, change your working directory to the local file you'd like to use
+as a home for the repo. On Windows, this might look something like...
+  $ cd .\HTCeramics
+Then, initialize the local file as a Git repo:
+  $ git init
+Add anything you have to add... and make your first commit.
+  $ git add .
+  $ git commit -m "First commit"
+Then the fun part - telling your local directory to pull from a remote url.
+  $ git remote add origin http://github.com/JairyJicama/HTCeramics
+  $ git remote -v  #to verify
+
+# Using Git to work on things!
+Every morning, I wake up, change my working directory, and
+  $ git pull
+This will give you an overview of additions and removals that anyone else has
+pushed since the last time you made your branch current. Sometimes you're
+already up to date, sometimes not.
+When you're done with a file for the time being, have tested it to the extent
+that you're willing, feel free to make a commit.
+Each push can have multiple commits, which themselves can have multiple changes.
+Generally, I commit and push once, near the end of the day. You do you.
+  $ git commit -m "your commit comment, which can be seen by everyone that can
+                    see the repo"
+  $ git push -u origin master
+Congrats! You've pushed all of your work to the central repo. Now others can
+pull that information to merge into their local branches, and see your work.
+
+* Git announced an intent to make some terminology changes this year, so when you
+  create a new repository or work on an existing one that was made after these
+  changes, while "master" might still work, you'll likely want to use "main" or
+  "primary" or whatever they settle on. When they change, you'll be able to find
+  information online.
+
+
+Feel free to ask for other information if you need it. But also, Google is
+your best friend. The chances that I don't just google it when you ask me
+are pretty slim... but I'm happy to add to this as needed.
