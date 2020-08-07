@@ -27,10 +27,13 @@ plt.figure()
 plt.xlabel("Time")
 plt.ylabel("Temperature")
 plt.title("Temp vs. Time")
+figA = plt.figure() # initialize a figure from matplotlib
+figB = plt.figure()
+figC = plt.figure()
 
-ac = fig.add_subplot() #adds top temperature box
-ax = fig.add_subplot() #adds time box
-aw = fig.add_subplot() #adds time box
+ac = figA.add_subplot() #adds top temperature box
+ax = figB.add_subplot() #adds time box
+aw = figC.add_subplot() #adds target temperature box
 
 print("DON'T FORGET TO SET YOUR COM PORT, if you need to set it, press c or edit the code")
 print("Press i to change the target temperature and right shift in order to stop the code")
