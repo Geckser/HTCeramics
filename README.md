@@ -8,9 +8,13 @@ Most of the code here is python with modules from anaconda [http://anaconda.org/
 like numPy, matplotlib, and others. 
 A few modules (generally in testing) may need to be installed separately.
 I suggest doing any additional installations in a separate *environment*, which can be set up with
+
   $ conda create --name <Name>
+
 and activated with
+
   $ conda activate <Name>
+
 It's not necessary, but it's nice to keep a clean workspace, and can help avoid conflicts if you start tinkering with extra modules (totally not speaking from experience). 
 
 If you already have an IDE that you're familiar with, cool. It doesn't matter what you use, though we have seen some 
