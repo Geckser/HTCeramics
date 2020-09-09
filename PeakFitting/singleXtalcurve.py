@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from lmfit.models import GaussianModel
 from lmfit.models import LorentzianModel
-from lmfit.models import VoigtModel
+from lmfit.models import PseudoVoigtModel
 #from scipy.optimize import leastsq
 
 df = pd.read_csv('singleXtalnum.csv') #read the csv file
@@ -40,22 +40,40 @@ def fittingGaussian(x, y): #fits a gaussian curve
     print(out.fit_report(min_correl=0.25))
     return out.best_fit
 
+def fittingLoretzian(x, y): #fits a loretzian curve
+    mod = LorentzianModel() 
+    pars = mod.guess(y, x = x) 
+    out = mod.fit(y, pars, x = x)
+    print(out.fit_report(min_correl=0.25))
+    return out.best_fit
+
+def fittingPseudoVoigt(x, y): #fits a pseudovoigt curve
+    mod = PseudoVoigtModel() 
+    pars = mod.guess(y, x = x) 
+    out = mod.fit(y, pars, x = x)
+    print(out.fit_report(min_correl=0.25))
+    return out.best_fit
+
 boundedData = curveFinder()
 
 x = boundedData[0] #for some reason the fit only works if the data is assigned like this
 y = boundedData[1]
 
 gaussianFit = fittingGaussian(x, y)
+lorentzianFit = fittingLoretzian(x, y)
+pseudoVoigtFit = fittingPseudoVoigt(x, y)
 
 #plots everything
 plt.plot(twoTheta, intensity, label = 'Single Crystal Si')
 plt.plot(boundedData[0], gaussianFit, label = 'Gaussian Fitted Curve')
+plt.plot(boundedData[0], lorentzianFit, label = 'Lorentzian Fitted Curve')
+plt.plot(boundedData[0], pseudoVoigtFit, label = 'Pseudo-Voigt Fitted Curve')
 plt.xlabel("Two Theta")
 plt.ylabel("Intensity")
 plt.legend()
 plt.show()
 
-
+#end of functional code
 """ lmfit does a better job at fitting, this is here for legacy sake
 sigma = 0.0268 #probably better to pull sigma from the fit
 #print(sigma)
