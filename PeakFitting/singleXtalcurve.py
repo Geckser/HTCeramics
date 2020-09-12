@@ -12,10 +12,10 @@ intensity = df["Intensity"] #assigns intensity column
 maxIntensity = intensity.max() #finds the value of the max intensity
 peakLocation = twoTheta[intensity.idxmax()] #finds the 2-theta value of the maximum
 derivativeIntensity = intensity.diff() #finds the rate of change of intensity, hopefully we can use this to find a good range for sigma
-
+print(intensity.mean())
 def curveFinder(): #funtion to narrow down the area of the peak
-    for i in range(0, len(derivativeIntensity)): #finds where the spike begins
-        if derivativeIntensity[i] >= 100: #this number might be specific to the curve, probably need a more universal way of finding it
+    for i in range(0, len(intensity)): #finds where the spike begins
+        if intensity[i] >= 100: #this number might be specific to the curve, probably need a more universal way of finding it
             curveStart = i
             break
 
