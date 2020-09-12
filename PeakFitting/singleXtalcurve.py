@@ -4,9 +4,8 @@ import numpy as np
 from lmfit.models import GaussianModel
 from lmfit.models import LorentzianModel
 from lmfit.models import PseudoVoigtModel
-#from scipy.optimize import leastsq
 
-df = pd.read_csv('singleXtalnum.csv') #read the csv file
+df = pd.read_csv('xrdData/singleXtalnum.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
 
