@@ -56,6 +56,18 @@ Generally, I commit and push once, near the end of the day. You do you.
 Congrats! You've pushed all of your work to the central repo. Now others can
 pull that information to merge into their local branches, and see your work.
 
+# Git branches common problems (to be updated as needed)
+To set up a local copy of a branch that stays tracked, first make sure that no
+local branches already exist with that name. In older versions of Git, there
+may be a better way to do this, but as of now, the cleanest command:
+  $ git checkout --track <remote-branch>
+For example,
+  $ git checkout --track remotes/origin/problem_solving
+This will automagically create a local copy of the branch named accordingly, and
+switch you over to it immediately. A a reminder, you can always check existing
+branches and your current branch with
+  $ git branch -a
+
 * Git announced an intent to make some terminology changes this year, so when you
   create a new repository or work on an existing one that was made after these
   changes, while "master" might still work, you'll likely want to use "main" or
