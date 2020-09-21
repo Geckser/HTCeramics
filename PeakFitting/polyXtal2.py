@@ -71,8 +71,35 @@ def updateSpecFromPeaks(spec, model_indicies, peak_widths=(10, 25), **kwargs): #
             raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
     return peak_indicies
 
+def peakFinder(spec): #finds and counts peaks, WIP can find first peak
+    x = spec['x']
+    y = spec['y']
+    baseIntensity = 10*y.mean() #checks for a baseline
+    dy = y.diff()
+    for i in range(0, len(y)): #finds where a peak starts
+        if y[i] >= baseIntensity:
+            peakStart = i
+            break
+        
+    for j in range(peakStart, len(dy)): #finds max peaks
+        if  dy[j] <= 0:
+            if dy[j+1] <= 0 and dy[j+2] <= 0 and dy[j+3] <= 0:
+                peakMax = j
+                break
+            else:
+                pass
 
-spec = {'x':twoTheta.index.values, 'y':intensity, 'model':[
+    for k in range(peakMax, len(y)): #finds the end of the peak
+        if y[k] < baseIntensity:
+            peakEnd = k
+            break
+    
+    print(peakStart, peakMax, peakEnd)
+    return (peakStart, peakMax, peakEnd)
+                
+
+
+spec = {'x':twoTheta, 'y':intensity, 'model':[
     {'type': 'GaussianModel'}, 
     {'type': 'GaussianModel'}, 
     {'type': 'GaussianModel'}, 
@@ -81,13 +108,15 @@ spec = {'x':twoTheta.index.values, 'y':intensity, 'model':[
     {'type': 'GaussianModel'}
     ]}
 
+foundPeaks = peakFinder(spec)
 
 peaks_found = updateSpecFromPeaks(spec, [0, 1, 2, 3, 4, 5], peak_widths=(250,300))
 fig, ax = plt.subplots()
 ax.scatter(spec['x'], spec['y'], s=4)
 for i in peaks_found:
     ax.axvline(x=spec['x'][i], c='black', linestyle='dotted')
-
+ 
+ax.axvline(x=spec['x'][foundPeaks[1]], c='red', linestyle='dotted')
 
 model, params = generateModel(spec)
 output = model.fit(spec['y'], params, x=spec['x'])
