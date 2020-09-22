@@ -71,12 +71,11 @@ def updateSpecFromPeaks(spec, model_indicies, peak_widths=(10, 25), **kwargs): #
             raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
     return peak_indicies
 
-def peakFinder(spec): #finds and counts peaks, WIP can find first peak
-    x = spec['x']
+def peakFinder(spec, endLastPeak): #finds and counts peaks, WIP can find first peak
     y = spec['y']
     baseIntensity = 10*y.mean() #checks for a baseline
     dy = y.diff()
-    for i in range(0, len(y)): #finds where a peak starts
+    for i in range(endLastPeak, len(y)): #finds where a peak starts
         if y[i] >= baseIntensity:
             peakStart = i
             break
@@ -95,9 +94,18 @@ def peakFinder(spec): #finds and counts peaks, WIP can find first peak
             break
     
     print(peakStart, peakMax, peakEnd)
-    return (peakStart, peakMax, peakEnd)
+    return peakStart, peakMax, peakEnd
                 
+def multiPeakFinder(spec): #runs peak finder for all the peaks
+    x = spec['x']
+    xMin = int(x.min())
+    xMax = int(x.max())
+    freshStart = 0 #sets the peak finding fuction to the start of the data
+    peak1 = peakFinder(spec, freshStart)
+    for i in range(xMin, xMax): #basically make a list here
 
+    
+    
 
 spec = {'x':twoTheta, 'y':intensity, 'model':[
     {'type': 'GaussianModel'}, 
@@ -116,7 +124,7 @@ ax.scatter(spec['x'], spec['y'], s=4)
 for i in peaks_found:
     ax.axvline(x=spec['x'][i], c='black', linestyle='dotted')
  
-ax.axvline(x=spec['x'][foundPeaks[1]], c='red', linestyle='dotted')
+#ax.axvline(x=spec['x'][foundPeaks[1]], c='red', linestyle='dotted')
 
 model, params = generateModel(spec)
 output = model.fit(spec['y'], params, x=spec['x'])
