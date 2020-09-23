@@ -56,6 +56,7 @@ Generally, I commit and push once, near the end of the day. You do you.
 Congrats! You've pushed all of your work to the central repo. Now others can
 pull that information to merge into their local branches, and see your work.
 
+<<<<<<< HEAD
 # Git branches common problems (to be updated as needed)
 To set up a local copy of a branch that stays tracked, first make sure that no
 local branches already exist with that name. In older versions of Git, there
@@ -67,6 +68,21 @@ This will automagically create a local copy of the branch named accordingly, and
 switch you over to it immediately. A a reminder, you can always check existing
 branches and your current branch with
   $ git branch -a
+=======
+GitHub has version tracking and keeps a record of historical changes. It does this with the use of branches. 
+Branches represent a snapshot in time of the code changes made,
+and are generally a safer way to interact with GitHub than pushing
+to master. 
+To see what branches are active, and which one you're on at the moment,
+  $ git branch -a
+To create and switch to a new branch,
+  $ git checkout -b <new_branch_name>
+To switch to an existing branch,
+  $ git switch <target_branch>
+There are several different commands available to do these things,
+and each with many parameters. If you need something more complicated,
+consult the git official documentation.
+>>>>>>> master
 
 * Git announced an intent to make some terminology changes this year, so when you
   create a new repository or work on an existing one that was made after these

@@ -1,0 +1,9 @@
+This folder is for image analysis, particularly
+of objects in an image and their shapes, areas, and changes over time.
+
+This will be expanded to apply to images of ceramic pellets being sintered
+in real-time while in the IR furnace.
+
+By monitoring the volume change of parts through image analysis,
+we can determine when ceramics have completed densification
+and use that to adjust the furnace parameters.

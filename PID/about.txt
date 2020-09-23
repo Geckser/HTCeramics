@@ -1,0 +1,4 @@
+This folder contains code for using the PID controllers associated with the
+IR furnace, including actual control of the PIDs, how to visualize outputs,
+and eventually feeding other information into the PIDs for more control over
+our processing of ceramic samples.
