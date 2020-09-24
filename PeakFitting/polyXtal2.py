@@ -100,15 +100,16 @@ def multiPeakFinder(spec): #runs peak finder for all the peaks
     x = spec['x']
     xMin = int(x.min())
     xMax = int(x.max())
-    endOfPeak = 0 #sets the peak finding fuction to the start of the data
     position = xMin
+    peakData = []
     for i in range(xMin, xMax):
         peak = peakFinder(spec, position)
         position = peak[2]
-        print(position)
-    return endOfPeak
+        peakData.append(peak)
+        print(len(peakData))
+    return peakData
 
-    
+ 
     
 
 spec = {'x':twoTheta, 'y':intensity, 'model':[
@@ -121,6 +122,7 @@ spec = {'x':twoTheta, 'y':intensity, 'model':[
     ]}
 
 foundPeaks = multiPeakFinder(spec)
+print(len(foundPeaks))
 
 peaks_found = updateSpecFromPeaks(spec, [0, 1, 2, 3, 4, 5], peak_widths=(250,300))
 fig, ax = plt.subplots()
