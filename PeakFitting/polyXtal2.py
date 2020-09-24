@@ -73,13 +73,16 @@ def updateSpecFromPeaks(spec, model_indicies, peak_widths=(10, 25), **kwargs): #
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks, WIP can find first peak
     y = spec['y']
-    baseIntensity = 2*y.mean() #checks for a baseline
+    baseIntensity = 2*y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
     dy = y.diff()
+    #print(len(y)-endLastPeak)
+    peakStart = -1
     for i in range(endLastPeak, len(y)): #finds where a peak starts
         if y[i] >= baseIntensity and y[i+1] >= baseIntensity and y[i+2] >= baseIntensity:
             peakStart = i
             break
-        
+    if peakStart == -1:
+        return     
     for j in range(peakStart, len(dy)): #finds max peaks
         if  dy[j] <= 0:
             if dy[j+1] <= 0 and dy[j+2] <= 0 and dy[j+3] <= 0:
@@ -101,14 +104,16 @@ def multiPeakFinder(spec): #runs peak finder for all the peaks
     y = spec['y']
     xMin = int(x.min())
     xMax = int(x.max())
-    #yMax = len(y)
+    yMax = len(y)
     position = xMin
     peakData = []
-    for i in range(xMin, xMax):
+    for h in range(xMin, xMax):
         peak = peakFinder(spec, position)
+        if not peak:
+            break
         position = peak[2]
         peakData.append(peak)
-        print(len(peakData), peakData)
+        #print(len(peakData), peakData)
     return peakData
 
  
