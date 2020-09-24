@@ -93,16 +93,20 @@ def peakFinder(spec, endLastPeak): #finds and counts peaks, WIP can find first p
             peakEnd = k
             break
     
-    print(peakStart, peakMax, peakEnd)
+    #print(peakStart, peakMax, peakEnd)
     return peakStart, peakMax, peakEnd
                 
 def multiPeakFinder(spec): #runs peak finder for all the peaks
     x = spec['x']
     xMin = int(x.min())
     xMax = int(x.max())
-    freshStart = 0 #sets the peak finding fuction to the start of the data
-    peak1 = peakFinder(spec, freshStart)
-    for i in range(xMin, xMax): #basically make a list here
+    endOfPeak = 0 #sets the peak finding fuction to the start of the data
+    position = xMin
+    for i in range(xMin, xMax):
+        peak = peakFinder(spec, position)
+        position = peak[2]
+        print(position)
+    return endOfPeak
 
     
     
@@ -116,7 +120,7 @@ spec = {'x':twoTheta, 'y':intensity, 'model':[
     {'type': 'GaussianModel'}
     ]}
 
-foundPeaks = peakFinder(spec)
+foundPeaks = multiPeakFinder(spec)
 
 peaks_found = updateSpecFromPeaks(spec, [0, 1, 2, 3, 4, 5], peak_widths=(250,300))
 fig, ax = plt.subplots()
