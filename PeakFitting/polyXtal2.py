@@ -73,10 +73,10 @@ def updateSpecFromPeaks(spec, model_indicies, peak_widths=(10, 25), **kwargs): #
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks, WIP can find first peak
     y = spec['y']
-    baseIntensity = 10*y.mean() #checks for a baseline
+    baseIntensity = 2*y.mean() #checks for a baseline
     dy = y.diff()
     for i in range(endLastPeak, len(y)): #finds where a peak starts
-        if y[i] >= baseIntensity:
+        if y[i] >= baseIntensity and y[i+1] >= baseIntensity and y[i+2] >= baseIntensity:
             peakStart = i
             break
         
@@ -89,7 +89,7 @@ def peakFinder(spec, endLastPeak): #finds and counts peaks, WIP can find first p
                 pass
 
     for k in range(peakMax, len(y)): #finds the end of the peak
-        if y[k] < baseIntensity:
+        if y[k] < baseIntensity and y[k+1] < baseIntensity and y[k+2] < baseIntensity:
             peakEnd = k
             break
     
@@ -98,15 +98,17 @@ def peakFinder(spec, endLastPeak): #finds and counts peaks, WIP can find first p
                 
 def multiPeakFinder(spec): #runs peak finder for all the peaks
     x = spec['x']
+    y = spec['y']
     xMin = int(x.min())
     xMax = int(x.max())
+    #yMax = len(y)
     position = xMin
     peakData = []
     for i in range(xMin, xMax):
         peak = peakFinder(spec, position)
         position = peak[2]
         peakData.append(peak)
-        print(len(peakData))
+        print(len(peakData), peakData)
     return peakData
 
  
@@ -131,6 +133,8 @@ for i in peaks_found:
     ax.axvline(x=spec['x'][i], c='black', linestyle='dotted')
  
 #ax.axvline(x=spec['x'][foundPeaks[1]], c='red', linestyle='dotted')
+ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
+ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
 
 model, params = generateModel(spec)
 output = model.fit(spec['y'], params, x=spec['x'])
