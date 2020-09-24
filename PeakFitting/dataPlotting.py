@@ -23,8 +23,13 @@ df = pd.read_csv(filePath)
 twoTheta = df["Angle"]
 intensity = df["Intensity"]
 
-plt.plot(twoTheta, intensity, label = 'Curve')
+print(len(twoTheta))
+
+figure, ax = plt.subplots()
+ax.plot(twoTheta, intensity, label = 'Curve')
+ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
 plt.xlabel("Two Theta")
 plt.ylabel("Intensity")
-plt.legend()
+ax.legend()
+
 plt.show()
