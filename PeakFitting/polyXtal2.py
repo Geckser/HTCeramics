@@ -48,6 +48,110 @@ def generateModel(spec):
     return compositeModel, params
 
 
+
+def peakFinder(spec, endLastPeak): #finds and counts peaks
+    y = spec['y']
+    baseIntensity = 2*y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
+    dy = y.diff()
+    #print(len(y)-endLastPeak)
+    peakStart = -1
+    for i in range(endLastPeak, len(y)): #finds where a peak starts
+        if y[i] >= baseIntensity and y[i+1] >= baseIntensity and y[i+2] >= baseIntensity:
+            peakStart = i
+            break
+
+    if peakStart == -1:
+        return     
+    
+    for j in range(peakStart, len(dy)): #finds max peaks
+        if  dy[j] <= 0:
+            if dy[j+1] <= 0 and dy[j+2] <= 0 and dy[j+3] <= 0:
+                peakMax = j
+                break
+            else:
+                pass
+
+    for k in range(peakMax, len(y)): #finds the end of the peak
+        if y[k] < baseIntensity and y[k+1] < baseIntensity and y[k+2] < baseIntensity:
+            peakEnd = k
+            break
+    
+    #print(peakStart, peakMax, peakEnd)
+    return peakStart, peakMax, peakEnd
+                
+def multiPeakFinder(spec): #runs peak finder for all the peaks
+    x = spec['x']
+    y = spec['y']
+    xMin = int(x.min())
+    xMax = int(x.max())
+    position = xMin
+    peakData = []
+    for h in range(xMin, xMax):
+        peak = peakFinder(spec, position)
+        if not peak:
+            break
+        position = peak[2]
+        peakData.append(peak)
+        #print(len(peakData), peakData)
+    
+    peakDataDF = pd.DataFrame(peakData, columns = ['Start', 'Max', 'End'])
+    print(peakDataDF)
+    return peakDataDF
+
+def updateParams(spec): #updates limit from data found in multiPeakFinder
+    x = spec['x']
+    y = spec['y']
+    x_range = np.max(x) - np.min(x)
+    peakData = multiPeakFinder(spec)
+    peak_indicies = peakData['Max']
+    peak_widths = peakData['End'] - peakData['Start']
+    model_indicies = range(0, len(peak_indicies))
+
+    for peak_indicie, model_indicie in zip(peak_indicies.tolist(), model_indicies): #This block is by by Chris Ostrouchov, https://chrisostrouchov.com/post/peak_fit_xrd_python/
+        model = spec['model'][model_indicie]
+        if model['type'] in ['GaussianModel', 'LorentzianModel', 'VoigtModel']:
+            params = {
+                'height': y[peak_indicie],
+                'sigma': x_range / len(x) * np.min(peak_widths),
+                'center': x[peak_indicie]
+            }
+            if 'params' in model:
+                model.update(params)
+            else:
+                model['params'] = params
+        else:
+            raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
+    return peak_indicies
+    
+
+spec = {'x':twoTheta, 'y':intensity, 'model':[
+    {'type': 'GaussianModel'}, 
+    {'type': 'GaussianModel'}, 
+    {'type': 'GaussianModel'}, 
+    {'type': 'GaussianModel'},
+    {'type': 'GaussianModel'},
+    {'type': 'GaussianModel'}
+    ]}
+
+foundPeaks = updateParams(spec)
+
+fig, ax = plt.subplots()
+ax.scatter(spec['x'], spec['y'], s=4)
+for i in foundPeaks:
+    ax.axvline(x=spec['x'][i], c='black', linestyle='dotted')
+
+ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
+ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
+
+model, params = generateModel(spec)
+output = model.fit(spec['y'], params, x=spec['x'])
+fig, gridspec = output.plot(data_kws={'markersize':  1})
+
+plt.show()
+
+"""
+Legacy Code: 
+
 #Funtion by Chris Ostrouchov, https://chrisostrouchov.com/post/peak_fit_xrd_python/, guesses using find_peaks_cwt
 def updateSpecFromPeaks(spec, model_indicies, peak_widths=(10, 25), **kwargs): #guesses where the peaks are 
     x = spec['x']
@@ -70,79 +174,3 @@ def updateSpecFromPeaks(spec, model_indicies, peak_widths=(10, 25), **kwargs): #
         else:
             raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
     return peak_indicies
-
-def peakFinder(spec, endLastPeak): #finds and counts peaks, WIP can find first peak
-    y = spec['y']
-    baseIntensity = 2*y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
-    dy = y.diff()
-    #print(len(y)-endLastPeak)
-    peakStart = -1
-    for i in range(endLastPeak, len(y)): #finds where a peak starts
-        if y[i] >= baseIntensity and y[i+1] >= baseIntensity and y[i+2] >= baseIntensity:
-            peakStart = i
-            break
-    if peakStart == -1:
-        return     
-    for j in range(peakStart, len(dy)): #finds max peaks
-        if  dy[j] <= 0:
-            if dy[j+1] <= 0 and dy[j+2] <= 0 and dy[j+3] <= 0:
-                peakMax = j
-                break
-            else:
-                pass
-
-    for k in range(peakMax, len(y)): #finds the end of the peak
-        if y[k] < baseIntensity and y[k+1] < baseIntensity and y[k+2] < baseIntensity:
-            peakEnd = k
-            break
-    
-    #print(peakStart, peakMax, peakEnd)
-    return peakStart, peakMax, peakEnd
-                
-def multiPeakFinder(spec): #runs peak finder for all the peaks
-    x = spec['x']
-    y = spec['y']
-    xMin = int(x.min())
-    xMax = int(x.max())
-    yMax = len(y)
-    position = xMin
-    peakData = []
-    for h in range(xMin, xMax):
-        peak = peakFinder(spec, position)
-        if not peak:
-            break
-        position = peak[2]
-        peakData.append(peak)
-        #print(len(peakData), peakData)
-    return peakData
-
- 
-    
-
-spec = {'x':twoTheta, 'y':intensity, 'model':[
-    {'type': 'GaussianModel'}, 
-    {'type': 'GaussianModel'}, 
-    {'type': 'GaussianModel'}, 
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'}
-    ]}
-
-foundPeaks = multiPeakFinder(spec)
-print(len(foundPeaks))
-
-peaks_found = updateSpecFromPeaks(spec, [0, 1, 2, 3, 4, 5], peak_widths=(250,300))
-fig, ax = plt.subplots()
-ax.scatter(spec['x'], spec['y'], s=4)
-for i in peaks_found:
-    ax.axvline(x=spec['x'][i], c='black', linestyle='dotted')
- 
-#ax.axvline(x=spec['x'][foundPeaks[1]], c='red', linestyle='dotted')
-ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
-ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
-
-model, params = generateModel(spec)
-output = model.fit(spec['y'], params, x=spec['x'])
-fig, gridspec = output.plot(data_kws={'markersize':  1})
-
-plt.show()
