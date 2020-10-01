@@ -11,7 +11,7 @@ df = pd.read_csv('xrdData/polyxtal.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
 
-
+"""
 #This function made by Chris Ostrouchov, https://chrisostrouchov.com/post/peak_fit_xrd_python/
 def generateModel(spec):
     composite_model = None
@@ -51,7 +51,13 @@ def generateModel(spec):
         else:
             composite_model = composite_model + model
     return composite_model, params
+"""
 
+def createModel(spec, params):
+    x = spec['x']
+    y = spec['y']
+    params = params
+    return params
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks
     y = spec['y']
@@ -99,7 +105,6 @@ def multiPeakFinder(spec): #runs peak finder for all the peaks
         #print(len(peakData), peakData)
     
     peakDataDF = pd.DataFrame(peakData, columns = ['Start', 'Max', 'End'])
-    print(peakDataDF)
     return peakDataDF
 
 def updateParams(spec): #updates limit from data found in multiPeakFinder
@@ -109,9 +114,8 @@ def updateParams(spec): #updates limit from data found in multiPeakFinder
     peakData = multiPeakFinder(spec)
     peak_indicies = peakData['Max']
     peak_widths = peakData['End'] - peakData['Start']
-    #peak_widths = [peakData['End'],peakData['Start']]
     model_indicies = range(0, len(peak_indicies))
-
+    totalParams = []
     for peak_indicie, model_indicie in zip(peak_indicies.tolist(), model_indicies): #This block is by by Chris Ostrouchov, https://chrisostrouchov.com/post/peak_fit_xrd_python/
         model = spec['model'][model_indicie]
         if model['type'] in ['GaussianModel', 'LorentzianModel', 'VoigtModel', 'PseudoVoigtModel']:
@@ -120,14 +124,12 @@ def updateParams(spec): #updates limit from data found in multiPeakFinder
                 'sigma': x_range / len(x) * np.min(peak_widths),
                 'center': x[peak_indicie]
             }
-            print(params)
-            if 'params' in model:
-                model.update(params)
-            else:
-                model['params'] = params
+            totalParams.append(params)
         else:
             raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
-    return peak_indicies
+    totalParams = pd.DataFrame(totalParams)
+    print(totalParams)
+    return peak_indicies, totalParams
     
     
 defaultspec = {'x':twoTheta, 'y':intensity, 'model':[
@@ -144,10 +146,11 @@ defaultspec = {'x':twoTheta, 'y':intensity, 'model':[
 
 spec = defaultspec
 
-foundPeaks = updateParams(spec)
-model, params = generateModel(spec)
+foundPeaks, params = updateParams(spec)
+out = createModel(spec, params)
+#model, params = generateModel(spec)
 
-output = model.fit(spec['y'], params, x=spec['x'])
+#output = model.fit(spec['y'], params, x=spec['x'])
 #print_best_values(spec, output)
 
 #plotting stuff below here
@@ -157,7 +160,7 @@ ax.scatter(spec['x'], spec['y'], s=4)
 for i in foundPeaks:
     ax.axvline(x=spec['x'][i], c='black', linestyle='dotted')
 """
-output.plot(data_kws={'markersize':  1})
+#output.plot(data_kws={'markersize':  1})
 
 #ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
 #ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
