@@ -57,7 +57,50 @@ def createModel(spec, params):
     x = spec['x']
     y = spec['y']
     params = params
-    return params
+    print(params) 
+    center = params['center']
+    height = params['height']
+    sigma = params['sigma']
+
+    gauss1 = models.GaussianModel(prefix='g1_')
+    pars = gauss1.make_params()
+    pars.update(gauss1.make_params())
+    pars['g1_center'].set(value = center[0])
+    pars['g1_sigma'].set(value = sigma[0])
+    pars['g1_amplitude'].set(value = height[0])
+
+    gauss2 = models.GaussianModel(prefix='g2_')
+    pars.update(gauss2.make_params())
+    pars['g2_center'].set(value = center[1])
+    pars['g2_sigma'].set(value = sigma[1])
+    pars['g2_amplitude'].set(value = height[1])
+
+    gauss3 = models.GaussianModel(prefix='g3_')
+    pars.update(gauss3.make_params())
+    pars['g3_center'].set(value = center[2])
+    pars['g3_sigma'].set(value = sigma[2])
+    pars['g3_amplitude'].set(value = height[2])
+
+    gauss4 = models.GaussianModel(prefix='g4_')
+    pars.update(gauss4.make_params())
+    pars['g4_center'].set(value = center[3])
+    pars['g4_sigma'].set(value = sigma[3])
+    pars['g4_amplitude'].set(value = height[3])
+
+    gauss5 = models.GaussianModel(prefix='g5_')
+    pars.update(gauss5.make_params())
+    pars['g5_center'].set(value = center[4])
+    pars['g5_sigma'].set(value = sigma[4])
+    pars['g5_amplitude'].set(value = height[4])
+
+    gauss6 = models.GaussianModel(prefix='g6_')
+    pars.update(gauss6.make_params())
+    pars['g6_center'].set(value = center[5])
+    pars['g6_sigma'].set(value = sigma[5])
+    pars['g6_amplitude'].set(value = height[5])
+
+    mod = gauss1 + gauss2 + gauss3 + gauss4 + gauss5 + gauss6
+    return mod, pars
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks
     y = spec['y']
@@ -128,7 +171,6 @@ def updateParams(spec): #updates limit from data found in multiPeakFinder
         else:
             raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
     totalParams = pd.DataFrame(totalParams)
-    print(totalParams)
     return peak_indicies, totalParams
     
     
@@ -139,15 +181,17 @@ defaultspec = {'x':twoTheta, 'y':intensity, 'model':[
     {'type': 'GaussianModel'},
     {'type': 'GaussianModel'},
     {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
     ]}
 
 spec = defaultspec
 
 foundPeaks, params = updateParams(spec)
-out = createModel(spec, params)
+mod, pars = createModel(spec, params)
+
+x = twoTheta
+y = intensity
+out = mod.fit(y, pars, x= x)
+out.plot(data_kws={'markersize':  1})
 #model, params = generateModel(spec)
 
 #output = model.fit(spec['y'], params, x=spec['x'])
