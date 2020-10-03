@@ -4,7 +4,6 @@ import random
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy import optimize, signal
 from lmfit import models
 
 df = pd.read_csv('xrdData/915aluminumNum.csv') #read the csv file
@@ -139,32 +138,17 @@ def updateParams(spec): #updates limit from data found in multiPeakFinder
     totalParams = pd.DataFrame(totalParams)
     return peak_indicies, totalParams
 
-def specWriter(spec):
-    peakData, peakCount = multiPeakFinder(defaultspec)
+def specWriter():
     spec = {'x':twoTheta, 'y':intensity, 'model':[]}
+    peakCount = multiPeakFinder(spec)
     modelList = spec['model']
-    for peaks in range(0, peakCount):
+    for peaks in range(0, peakCount[1]):
         modelList.append({'type':'GaussianModel'})
-        
-
-    print(spec)    
+           
     return spec
     
-defaultspec = {'x':twoTheta, 'y':intensity, 'model':[
-    {'type': 'GaussianModel'}, 
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    {'type': 'GaussianModel'},
-    ]}
 
-#print(defaultspec)
-defaultspec = {'x':twoTheta, 'y':intensity, 'model':[]}
-spec = specWriter(defaultspec)
+spec = specWriter()
 
 foundPeaks, params = updateParams(spec)
 mod, pars = createModel(spec, params)
@@ -174,8 +158,6 @@ out = mod.fit(intensity, pars, x= twoTheta)
 
 #plotting stuff below here
 out.plot(data_kws={'markersize':  1})
-
-
 
 #This plots where the peaks are. Useful for testing
 """
