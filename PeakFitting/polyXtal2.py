@@ -7,10 +7,9 @@ import matplotlib.pyplot as plt
 from scipy import optimize, signal
 from lmfit import models
 
-df = pd.read_csv('xrdData/polyxtal.csv') #read the csv file
+df = pd.read_csv('xrdData/915aluminumNum.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
-
 
 def createModel(spec, params):
     params = params
@@ -51,8 +50,22 @@ def createModel(spec, params):
             else:
                 mod = mod + lorentz  
 
+        elif basis_func[i] == 'PseudoVoigtModel':
+            prefix = 'p'+str(i)+'_'
+            pseudoV = models.PseudoVoigtModel(prefix = prefix)
+            pars.update(pseudoV.make_params())
+
+            pars[prefix + 'center'].set(center[i])
+            pars[prefix + 'sigma'].set(sigma[i])
+            pars[prefix + 'amplitude'].set(height[i])
+            if i == 0: #initiallizes the mod variable if it's the first model in the composite function
+                mod = pseudoV
+            else:
+                mod = mod + pseudoV
         
-      
+        else:
+            print("Function not implemented")
+
     return mod, pars
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks
@@ -98,19 +111,19 @@ def multiPeakFinder(spec): #runs peak finder for all the peaks
             break
         position = peak[2]
         peakData.append(peak)
-        #print(len(peakData), peakData)
-    
+        
+    peakCount = len(peakData)
     peakDataDF = pd.DataFrame(peakData, columns = ['Start', 'Max', 'End'])
-    return peakDataDF
+    return peakDataDF, peakCount
 
 def updateParams(spec): #updates limit from data found in multiPeakFinder
     x = spec['x']
     y = spec['y']
     x_range = np.max(x) - np.min(x)
-    peakData = multiPeakFinder(spec)
+    peakData, peakCount = multiPeakFinder(spec)
     peak_indicies = peakData['Max']
     peak_widths = peakData['End'] - peakData['Start']
-    model_indicies = range(0, len(peak_indicies))
+    model_indicies = range(0, peakCount)
     totalParams = []
     for peak_indicie, model_indicie in zip(peak_indicies.tolist(), model_indicies): #This block is by by Chris Ostrouchov, https://chrisostrouchov.com/post/peak_fit_xrd_python/
         model = spec['model'][model_indicie]
@@ -122,21 +135,36 @@ def updateParams(spec): #updates limit from data found in multiPeakFinder
             }
             totalParams.append(params)
         else:
-            raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
+            print("Function not implemeted")
     totalParams = pd.DataFrame(totalParams)
     return peak_indicies, totalParams
-    
+
+def specWriter(spec):
+    peakData, peakCount = multiPeakFinder(defaultspec)
+    spec = {'x':twoTheta, 'y':intensity, 'model':[]}
+    modelList = spec['model']
+    for peaks in range(0, peakCount):
+        modelList.append({'type':'GaussianModel'})
+        
+
+    print(spec)    
+    return spec
     
 defaultspec = {'x':twoTheta, 'y':intensity, 'model':[
     {'type': 'GaussianModel'}, 
     {'type': 'GaussianModel'},
     {'type': 'GaussianModel'},
-    {'type': 'LorentzianModel'},
+    {'type': 'GaussianModel'},
+    {'type': 'GaussianModel'},
+    {'type': 'GaussianModel'},
+    {'type': 'GaussianModel'},
     {'type': 'GaussianModel'},
     {'type': 'GaussianModel'},
     ]}
 
-spec = defaultspec
+#print(defaultspec)
+defaultspec = {'x':twoTheta, 'y':intensity, 'model':[]}
+spec = specWriter(defaultspec)
 
 foundPeaks, params = updateParams(spec)
 mod, pars = createModel(spec, params)
@@ -147,13 +175,18 @@ out = mod.fit(intensity, pars, x= twoTheta)
 #plotting stuff below here
 out.plot(data_kws={'markersize':  1})
 
-""" This plots where the peaks are. Useful for testing
+
+
+#This plots where the peaks are. Useful for testing
+"""
 fig, ax = plt.subplots()
 ax.scatter(spec['x'], spec['y'], s=4)
 for i in foundPeaks:
     ax.axvline(x=spec['x'][i], c='black', linestyle='dotted')
-"""
 
+ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
+ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
+"""
 
 plt.show()
 
