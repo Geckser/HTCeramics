@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from lmfit import models
+from tkinter import *
+from tkinter import ttk
 
 df = pd.read_csv('xrdData/915aluminumNum.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
@@ -19,7 +21,7 @@ def createModel(spec, params):
     height = params['height']
     sigma = params['sigma']
     
-    gaussi = models.GaussianModel(prefix = 'gi_') #uses an empty gaussian fucntion to initialaize the paramaters
+    gaussi = models.GaussianModel(prefix = 'gi_') #uses an empty gaussian function to initialaize the paramaters
     pars = gaussi.make_params() #creates params dataset
     
     for i in peaks:
@@ -144,7 +146,18 @@ def specWriter():
     modelList = spec['model']
     for peaks in range(0, peakCount[1]):
         modelList.append({'type':'GaussianModel'})
-           
+        """ Finds each individual peak, broken
+        print("Choose Model type for peak" + str(peaks) +"\n 1 Gaussian, 2 for Lorentzian, 3 for PseudoVoigt: ")
+        modelType = input()
+        if modelType == 1:
+            modelList.append({'type':'GaussianModel'})
+        elif modelType == 2:
+            modelList.append({'type':'LorenztianModel'})
+        elif modelType == 3:
+            modelList.append({'type':'PseudoVoigtModel'})
+        else:
+            print('Invalid Choice')
+        """   
     return spec
     
 
@@ -155,6 +168,15 @@ mod, pars = createModel(spec, params)
 
 out = mod.fit(intensity, pars, x= twoTheta)
 
+#UI stuff here
+
+root = Tk()
+root.title("Peak Data")
+mainframe = ttk.Frame(root, padding = "3 3 12 12")
+mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
+root.columnconfigure(0, weight=1)
+root.rowconfigure(0, weight=1)
+ttk.Label(mainframe, text = params).grid(column = 2, row = 2, stick = (W,E))
 
 #plotting stuff below here
 out.plot(data_kws={'markersize':  1})
