@@ -1,0 +1,8 @@
+spec = {
+    'x': twoTheta,
+    'y': intensity,
+    'model': [
+        {'type': 'GaussianModel'},
+        {'type': 'GaussianModel'},
+        {'type': 'GaussianModel'}
+}
