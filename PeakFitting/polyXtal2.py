@@ -11,95 +11,33 @@ df = pd.read_csv('xrdData/polyxtal.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
 
-"""
-#This function made by Chris Ostrouchov, https://chrisostrouchov.com/post/peak_fit_xrd_python/
-def generateModel(spec):
-    composite_model = None
-    params = None
-    x = spec['x']
-    y = spec['y']
-    x_min = np.min(x)
-    x_max = np.max(x)
-    x_range = x_max - x_min
-    y_max = np.max(y)
-    for i, basis_func in enumerate(spec['model']):
-        prefix = f'm{i}_'
-        model = getattr(models, basis_func['type'])(prefix=prefix)
-        if basis_func['type'] in ['GaussianModel', 'LorentzianModel', 'VoigtModel', 'PseudoVoigtModel']: # for now VoigtModel has gamma constrained to sigma
-            model.set_param_hint('sigma', min=1e-6, max=x_range)
-            model.set_param_hint('center', min=x_min, max=x_max)
-            model.set_param_hint('height', min=1e-6, max=1.1*y_max)
-            model.set_param_hint('amplitude', min=1e-6)
-            # default guess is horrible!! do not use guess()
-            default_params = {
-                prefix+'center': x_min + x_range * random.random(),
-                prefix+'height': y_max * random.random(),
-                prefix+'sigma': x_range * random.random()
-            }
-        else:
-            raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
-        if 'help' in basis_func:  # allow override of settings in parameter
-            for param, options in basis_func['help'].items():
-                model.set_param_hint(param, **options)
-        model_params = model.make_params(**default_params, **basis_func.get('params', {}))
-        if params is None:
-            params = model_params
-        else:
-            params.update(model_params)
-        if composite_model is None:
-            composite_model = model
-        else:
-            composite_model = composite_model + model
-    return composite_model, params
-"""
 
 def createModel(spec, params):
-    x = spec['x']
-    y = spec['y']
     params = params
-    print(params) 
+    modelType = pd.DataFrame(spec['model'])
+    basis_func = modelType['type']
+    peaks = params.index.values
     center = params['center']
     height = params['height']
     sigma = params['sigma']
+    
+    gaussi = models.GaussianModel(prefix = 'gi_') #uses an empty gaussian fucntion to initialaize the paramaters
+    pars = gaussi.make_params() #creates params dataset
+    
+    for i in peaks:
+        if basis_func[i] == 'GaussianModel':
+            prefix = 'g'+str(i)+'_'
+            gauss = models.GaussianModel(prefix = prefix)
+            pars.update(gauss.make_params())
 
-    gauss1 = models.GaussianModel(prefix='g1_')
-    pars = gauss1.make_params()
-    pars.update(gauss1.make_params())
-    pars['g1_center'].set(value = center[0])
-    pars['g1_sigma'].set(value = sigma[0])
-    pars['g1_amplitude'].set(value = height[0])
-
-    gauss2 = models.GaussianModel(prefix='g2_')
-    pars.update(gauss2.make_params())
-    pars['g2_center'].set(value = center[1])
-    pars['g2_sigma'].set(value = sigma[1])
-    pars['g2_amplitude'].set(value = height[1])
-
-    gauss3 = models.GaussianModel(prefix='g3_')
-    pars.update(gauss3.make_params())
-    pars['g3_center'].set(value = center[2])
-    pars['g3_sigma'].set(value = sigma[2])
-    pars['g3_amplitude'].set(value = height[2])
-
-    gauss4 = models.GaussianModel(prefix='g4_')
-    pars.update(gauss4.make_params())
-    pars['g4_center'].set(value = center[3])
-    pars['g4_sigma'].set(value = sigma[3])
-    pars['g4_amplitude'].set(value = height[3])
-
-    gauss5 = models.GaussianModel(prefix='g5_')
-    pars.update(gauss5.make_params())
-    pars['g5_center'].set(value = center[4])
-    pars['g5_sigma'].set(value = sigma[4])
-    pars['g5_amplitude'].set(value = height[4])
-
-    gauss6 = models.GaussianModel(prefix='g6_')
-    pars.update(gauss6.make_params())
-    pars['g6_center'].set(value = center[5])
-    pars['g6_sigma'].set(value = sigma[5])
-    pars['g6_amplitude'].set(value = height[5])
-
-    mod = gauss1 + gauss2 + gauss3 + gauss4 + gauss5 + gauss6
+            pars[prefix + 'center'].set(center[i])
+            pars[prefix + 'sigma'].set(sigma[i])
+            pars[prefix + 'amplitude'].set(height[i])
+            if i == 0:
+                mod = gauss
+            else:
+                mod = mod + gauss   
+      
     return mod, pars
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks
@@ -192,7 +130,7 @@ x = twoTheta
 y = intensity
 out = mod.fit(y, pars, x= x)
 out.plot(data_kws={'markersize':  1})
-#model, params = generateModel(spec)
+
 
 #output = model.fit(spec['y'], params, x=spec['x'])
 #print_best_values(spec, output)
@@ -215,6 +153,47 @@ plt.show()
 
 """
 Legacy Code: 
+
+#This function made by Chris Ostrouchov, https://chrisostrouchov.com/post/peak_fit_xrd_python/
+def generateModel(spec):
+    composite_model = None
+    params = None
+    x = spec['x']
+    y = spec['y']
+    x_min = np.min(x)
+    x_max = np.max(x)
+    x_range = x_max - x_min
+    y_max = np.max(y)
+    for i, basis_func in enumerate(spec['model']):
+        prefix = f'm{i}_'
+        model = getattr(models, basis_func['type'])(prefix=prefix)
+        if basis_func['type'] in ['GaussianModel', 'LorentzianModel', 'VoigtModel', 'PseudoVoigtModel']: # for now VoigtModel has gamma constrained to sigma
+            model.set_param_hint('sigma', min=1e-6, max=x_range)
+            model.set_param_hint('center', min=x_min, max=x_max)
+            model.set_param_hint('height', min=1e-6, max=1.1*y_max)
+            model.set_param_hint('amplitude', min=1e-6)
+            # default guess is horrible!! do not use guess()
+            default_params = {
+                prefix+'center': x_min + x_range * random.random(),
+                prefix+'height': y_max * random.random(),
+                prefix+'sigma': x_range * random.random()
+            }
+        else:
+            raise NotImplemented(f'model {basis_func["type"]} not implemented yet')
+        if 'help' in basis_func:  # allow override of settings in parameter
+            for param, options in basis_func['help'].items():
+                model.set_param_hint(param, **options)
+        model_params = model.make_params(**default_params, **basis_func.get('params', {}))
+        if params is None:
+            params = model_params
+        else:
+            params.update(model_params)
+        if composite_model is None:
+            composite_model = model
+        else:
+            composite_model = composite_model + model
+    return composite_model, params
+
 
 #Funtion by Chris Ostrouchov, https://chrisostrouchov.com/post/peak_fit_xrd_python/, guesses using find_peaks_cwt
 def updateSpecFromPeaks(spec, model_indicies, peak_widths=(10, 25), **kwargs): #guesses where the peaks are 
