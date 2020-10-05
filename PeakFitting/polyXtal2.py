@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from lmfit import models
 from tkinter import *
 from tkinter import ttk
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 
 df = pd.read_csv('xrdData/915aluminumNum.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
@@ -146,6 +148,15 @@ def specWriter():
     modelList = spec['model']
     for peaks in range(0, peakCount[1]):
         modelList.append({'type':'GaussianModel'})
+
+    return spec
+
+def specWriter2(): #for UI
+    spec = {'x':twoTheta, 'y':intensity, 'model':[]}
+    peakCount = multiPeakFinder(spec)
+    modelList = spec['model']
+    for peaks in range(0, peakCount[1]):
+        modelList.append({'type':'GaussianModel'})
         """ Finds each individual peak, broken
         print("Choose Model type for peak" + str(peaks) +"\n 1 Gaussian, 2 for Lorentzian, 3 for PseudoVoigt: ")
         modelType = input()
@@ -159,27 +170,51 @@ def specWriter():
             print('Invalid Choice')
         """   
     return spec
-    
+
+def dataPlotter(spec): #plots the data without a curve, used in UI
+    fig = Figure(figsize = (5,5), dpi = 100)
+
+    x = spec['x']
+    y = spec['y']
+
+    plot = fig.add_subplot(111)
+
+    plot.scatter(x,y, s = 4)
+
+    canvas = FigureCanvasTkAgg(fig, master = mainframe)
+    canvas.draw()
+
+    canvas.get_tk_widget().grid(column = 0, row = 0, stick = (N, W))
+
+def fitCurve(spec, params): #fits the curve, BROKEN
+    intensity = spec['y']
+    twoTheta = spec['x']
+    fig = Figure(figsize = (5,5), dpi = 100)
+    mod, pars = createModel(spec, params)
+    out = mod.fit(intensity, pars, x = twoTheta)
+    out.plot(data_kws={'markersize':  1})
+
+    canvas = FigureCanvasTkAgg(fig, master = mainframe)
+    canvas.draw()
+
+    canvas.get_tk_widget().grid(column = 0, row = 0, stick = (N, W))
+
+def _quit(): #allows process to actually stop
+    root.quit()
+    root.destroy()
 
 spec = specWriter()
 
 foundPeaks, params = updateParams(spec)
-mod, pars = createModel(spec, params)
+#mod, pars = createModel(spec, params)
 
-out = mod.fit(intensity, pars, x= twoTheta)
+#out = mod.fit(intensity, pars, x= twoTheta)
 
-#UI stuff here
 
-root = Tk()
-root.title("Peak Data")
-mainframe = ttk.Frame(root, padding = "3 3 12 12")
-mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
-ttk.Label(mainframe, text = params).grid(column = 2, row = 2, stick = (W,E))
 
 #plotting stuff below here
-out.plot(data_kws={'markersize':  1})
+#out.plot(data_kws={'markersize':  1})
+
 
 #This plots where the peaks are. Useful for testing
 """
@@ -192,6 +227,21 @@ ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
 ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
 """
 
-plt.show()
+#plt.show()
 
 
+#UI stuff here
+
+root = Tk()
+root.title("Peak Data")
+mainframe = ttk.Frame(root, padding = "3 3 12 12")
+mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
+root.columnconfigure(0, weight=1)
+root.rowconfigure(0, weight=1)
+ttk.Label(mainframe, text = params).grid(column = 0, row = 2, stick = (W,E))
+ttk.Button(master = mainframe, command = dataPlotter(spec), text = 'Plot').grid(column = 1, row = 2, stick = (N))
+#ttk.Button(master = mainframe, command = fitCurve(spec, params), text = 'Fit').grid(column =1, row =2, stick = (W))
+ttk.Button(master = mainframe, command =_quit, text = 'Quit').grid(column = 1, row = 2, stick = (S))
+
+
+root.mainloop()
