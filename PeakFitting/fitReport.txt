@@ -1,0 +1,62 @@
+[[Model]]
+    (((((Model(pvoigt, prefix='p0_') + Model(pvoigt, prefix='p1_')) + Model(pvoigt, prefix='p2_')) + Model(pvoigt, prefix='p3_')) + Model(pvoigt, prefix='p4_')) + Model(pvoigt, prefix='p5_'))
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 1864
+    # data points      = 8378
+    # variables        = 27
+    chi-square         = 456041.057
+    reduced chi-square = 54.6091555
+    Akaike info crit   = 33540.6450
+    Bayesian info crit = 33730.5458
+##  Warning: uncertainties could not be estimated:
+    gi_amplitude:  at initial value
+    gi_sigma:      at initial value
+    p0_fraction:   at boundary
+    p1_fraction:   at boundary
+    p2_fraction:   at boundary
+    p3_fraction:   at boundary
+    p4_fraction:   at boundary
+    p5_fraction:   at boundary
+[[Variables]]
+    gi_amplitude:  1.00000000 (init = 1)
+    gi_center:     0.00000000 (init = 0)
+    gi_sigma:      1.00000000 (init = 1)
+    gi_fwhm:       2.35482000 == '2.3548200*gi_sigma'
+    gi_height:     0.39894230 == '0.3989423*gi_amplitude/max(2.220446049250313e-16, gi_sigma)'
+    p0_amplitude:  120.435288 (init = 835)
+    p0_center:     28.4090984 (init = 28.4183)
+    p0_sigma:      0.04741541 (init = 0.3341855)
+    p0_fraction:   0.99999817 (init = 0.5)
+    p0_fwhm:       0.09483082 == '2.0000000*p0_sigma'
+    p0_height:     808.508759 == '(((1-p0_fraction)*p0_amplitude)/max(2.220446049250313e-16, (p0_sigma*sqrt(pi/log(2))))+(p0_fraction*p0_amplitude)/max(2.220446049250313e-16, (pi*p0_sigma)))'
+    p1_amplitude:  62.9678706 (init = 383)
+    p1_center:     47.2618017 (init = 47.27697)
+    p1_sigma:      0.05222209 (init = 0.3341855)
+    p1_fraction:   1.00000000 (init = 0.5)
+    p1_fwhm:       0.10444418 == '2.0000000*p1_sigma'
+    p1_height:     383.808746 == '(((1-p1_fraction)*p1_amplitude)/max(2.220446049250313e-16, (p1_sigma*sqrt(pi/log(2))))+(p1_fraction*p1_amplitude)/max(2.220446049250313e-16, (pi*p1_sigma)))'
+    p2_amplitude:  33.9280494 (init = 76)
+    p2_center:     56.0789409 (init = 56.25928)
+    p2_sigma:      0.05476115 (init = 0.3341855)
+    p2_fraction:   1.00000000 (init = 0.5)
+    p2_fwhm:       0.10952230 == '2.0000000*p2_sigma'
+    p2_height:     197.213414 == '(((1-p2_fraction)*p2_amplitude)/max(2.220446049250313e-16, (p2_sigma*sqrt(pi/log(2))))+(p2_fraction*p2_amplitude)/max(2.220446049250313e-16, (pi*p2_sigma)))'
+    p3_amplitude:  8.76071388 (init = 12)
+    p3_center:     69.0820809 (init = 69.32749)
+    p3_sigma:      0.07874546 (init = 0.3341855)
+    p3_fraction:   0.99999995 (init = 0.5)
+    p3_fwhm:       0.15749092 == '2.0000000*p3_sigma'
+    p3_height:     35.4131129 == '(((1-p3_fraction)*p3_amplitude)/max(2.220446049250313e-16, (p3_sigma*sqrt(pi/log(2))))+(p3_fraction*p3_amplitude)/max(2.220446049250313e-16, (pi*p3_sigma)))'
+    p4_amplitude:  13.8195997 (init = 62)
+    p4_center:     76.3289840 (init = 76.35458)
+    p4_sigma:      0.05417665 (init = 0.3341855)
+    p4_fraction:   1.00000000 (init = 0.5)
+    p4_fwhm:       0.10835330 == '2.0000000*p4_sigma'
+    p4_height:     81.1957764 == '(((1-p4_fraction)*p4_amplitude)/max(2.220446049250313e-16, (p4_sigma*sqrt(pi/log(2))))+(p4_fraction*p4_amplitude)/max(2.220446049250313e-16, (pi*p4_sigma)))'
+    p5_amplitude:  17.9473860 (init = 94)
+    p5_center:     87.9711777 (init = 87.98562)
+    p5_sigma:      0.06665024 (init = 0.3341855)
+    p5_fraction:   1.00000000 (init = 0.5)
+    p5_fwhm:       0.13330049 == '2.0000000*p5_sigma'
+    p5_height:     85.7135721 == '(((1-p5_fraction)*p5_amplitude)/max(2.220446049250313e-16, (p5_sigma*sqrt(pi/log(2))))+(p5_fraction*p5_amplitude)/max(2.220446049250313e-16, (pi*p5_sigma)))'
