@@ -10,7 +10,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-df = pd.read_csv('xrdData/915aluminumNum.csv') #read the csv file
+df = pd.read_csv('xrdData/polyxtal.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
 
@@ -147,7 +147,7 @@ def specWriter():
     peakCount = multiPeakFinder(spec)
     modelList = spec['model']
     for peaks in range(0, peakCount[1]):
-        modelList.append({'type':'GaussianModel'})
+        modelList.append({'type':'PseudoVoigtModel'})
 
     return spec
 
@@ -199,6 +199,11 @@ def fitCurve(spec, params): #fits the curve, BROKEN
 
     canvas.get_tk_widget().grid(column = 0, row = 0, stick = (N, W))
 
+def fitReport(out):
+    file = open('fitReport.txt', 'w')
+    file.write(out.fit_report(min_correl = 0.25))
+    file.close()
+
 def _quit(): #allows process to actually stop
     root.quit()
     root.destroy()
@@ -206,15 +211,16 @@ def _quit(): #allows process to actually stop
 spec = specWriter()
 
 foundPeaks, params = updateParams(spec)
-#mod, pars = createModel(spec, params)
+mod, pars = createModel(spec, params)
 
-#out = mod.fit(intensity, pars, x= twoTheta)
+out = mod.fit(intensity, pars, x= twoTheta)
 
-
+fitReport(out)
 
 #plotting stuff below here
-#out.plot(data_kws={'markersize':  1})
-
+out.plot(data_kws={'markersize':  1})
+plt.xlabel("Two Theta")
+plt.ylabel("Intenisty")
 
 #This plots where the peaks are. Useful for testing
 """
@@ -227,7 +233,7 @@ ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
 ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
 """
 
-#plt.show()
+plt.show()
 
 
 #UI stuff here
@@ -244,4 +250,4 @@ ttk.Button(master = mainframe, command = dataPlotter(spec), text = 'Plot').grid(
 ttk.Button(master = mainframe, command =_quit, text = 'Quit').grid(column = 1, row = 2, stick = (S))
 
 
-root.mainloop()
+#root.mainloop()
