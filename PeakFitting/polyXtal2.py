@@ -182,10 +182,10 @@ def dataPlotter(): #plots the data without a curve, used in UI
     plot.scatter(x,y, s = 4)
     plt.xlabel("Two Theta")
     plt.ylabel("Intensity")
-    canvas = FigureCanvasTkAgg(fig, master = window)
+    canvas = FigureCanvasTkAgg(fig, master = mainframe)
     canvas.draw()
 
-    canvas.get_tk_widget().pack()
+    canvas.get_tk_widget().grid(column = 0, row  = 0, stick = (N, W))
 
 def fitCurve(): #fits the curve, BROKEN
     spec = specWriter()
@@ -210,9 +210,9 @@ def _quit(): #allows process to actually stop
     window.quit()
     window.destroy()
 
-#spec = specWriter()
+spec = specWriter()
 
-#foundPeaks, params = updateParams(spec)
+foundPeaks, params = updateParams(spec)
 #mod, pars = createModel(spec, params)
 
 #out = mod.fit(intensity, pars, x= twoTheta)
@@ -242,21 +242,27 @@ ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
 
 window = Tk()
 window.title("Peak Data")
-window.geometry("750x750")
-plot_button = Button(master = window, command = dataPlotter, height = 2, width = 10, text = 'Plot')
-plot_button.pack()
-fit_button = Button(master = window, command = fitCurve, height = 2, width = 10, text = 'Fit')
-fit_button.pack()
-quit_button = Button(master = window, command = _quit, height = 2, width = 10, text = "Quit")
-quit_button.pack()
+#window.geometry("750x750")
+mainframe = ttk.Frame(window, padding = "3 3 12 12")
+mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
+window.columnconfigure(0, weight=1)
+window.rowconfigure(0, weight=1)
+"""
+plot_button = ttk.Button(master = mainframe, command = dataPlotter, text = 'Plot')
+plot_button.grid(column = 1, row = 1, stick = (N))
+fit_button = ttk.Button(master = mainframe, command = fitCurve, text = 'Fit')
+fit_button.grid(column = 1, row = 1, stick = (S))
+quit_button = ttk.Button(master = mainframe, command = _quit, text = "Quit")
+quit_button.grid(column = 1, row = 2, stick = (S))
+"""
 #mainframe = ttk.Frame(root, padding = "3 3 12 12")
 #mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
 #root.columnconfigure(0, weight=1)
 #root.rowconfigure(0, weight=1)
-#ttk.Label(mainframe, text = params).grid(column = 0, row = 2, stick = (W,E))
-#ttk.Button(master = mainframe, command = dataPlotter(spec), text = 'Plot').grid(column = 1, row = 2, stick = (N))
-#ttk.Button(master = mainframe, command = fitCurve(spec, params), text = 'Fit').grid(column =1, row =2, stick = (W))
-#ttk.Button(master = mainframe, command =_quit, text = 'Quit').grid(column = 1, row = 2, stick = (S))
+ttk.Label(mainframe, text = params).grid(column = 0, row = 2, stick = (W,E))
+ttk.Button(master = mainframe, command = dataPlotter, text = 'Plot').grid(column = 1, row = 2, stick = (N))
+ttk.Button(master = mainframe, command = fitCurve, text = 'Fit').grid(column =1, row =2, stick = (W))
+ttk.Button(master = mainframe, command =_quit, text = 'Quit').grid(column = 1, row = 2, stick = (S))
 
 
 window.mainloop()
