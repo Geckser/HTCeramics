@@ -10,7 +10,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-df = pd.read_csv('xrdData/polyxtal.csv') #read the csv file
+df = pd.read_csv('xrdData/915aluminumNum.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
 
@@ -147,7 +147,7 @@ def specWriter():
     peakCount = multiPeakFinder(spec)
     modelList = spec['model']
     for peaks in range(0, peakCount[1]):
-        modelList.append({'type':'PseudoVoigtModel'})
+        modelList.append({'type':'GaussianModel'})
 
     return spec
 
@@ -171,33 +171,35 @@ def specWriter2(): #for UI
         """   
     return spec
 
-def dataPlotter(spec): #plots the data without a curve, used in UI
+def dataPlotter(): #plots the data without a curve, used in UI
     fig = Figure(figsize = (5,5), dpi = 100)
-
+    spec = specWriter()
     x = spec['x']
     y = spec['y']
 
     plot = fig.add_subplot(111)
 
     plot.scatter(x,y, s = 4)
-
-    canvas = FigureCanvasTkAgg(fig, master = mainframe)
+    plt.xlabel("Two Theta")
+    plt.ylabel("Intensity")
+    canvas = FigureCanvasTkAgg(fig, master = window)
     canvas.draw()
 
-    canvas.get_tk_widget().grid(column = 0, row = 0, stick = (N, W))
+    canvas.get_tk_widget().pack()
 
-def fitCurve(spec, params): #fits the curve, BROKEN
+def fitCurve(): #fits the curve, BROKEN
+    spec = specWriter()
+    foundPeaks, params = updateParams(spec)
     intensity = spec['y']
     twoTheta = spec['x']
-    fig = Figure(figsize = (5,5), dpi = 100)
     mod, pars = createModel(spec, params)
     out = mod.fit(intensity, pars, x = twoTheta)
     out.plot(data_kws={'markersize':  1})
-
-    canvas = FigureCanvasTkAgg(fig, master = mainframe)
-    canvas.draw()
-
-    canvas.get_tk_widget().grid(column = 0, row = 0, stick = (N, W))
+    plt.xlabel('Two Theta')
+    plt.ylabel('Intenisty')
+    plt.show()
+    fitReport(out)
+    return out
 
 def fitReport(out):
     file = open('fitReport.txt', 'w')
@@ -205,22 +207,22 @@ def fitReport(out):
     file.close()
 
 def _quit(): #allows process to actually stop
-    root.quit()
-    root.destroy()
+    window.quit()
+    window.destroy()
 
-spec = specWriter()
+#spec = specWriter()
 
-foundPeaks, params = updateParams(spec)
-mod, pars = createModel(spec, params)
+#foundPeaks, params = updateParams(spec)
+#mod, pars = createModel(spec, params)
 
-out = mod.fit(intensity, pars, x= twoTheta)
+#out = mod.fit(intensity, pars, x= twoTheta)
 
-fitReport(out)
+#fitReport(out)
 
 #plotting stuff below here
-out.plot(data_kws={'markersize':  1})
-plt.xlabel("Two Theta")
-plt.ylabel("Intenisty")
+#out.plot(data_kws={'markersize':  1})
+#plt.xlabel("Two Theta")
+#plt.ylabel("Intenisty")
 
 #This plots where the peaks are. Useful for testing
 """
@@ -233,21 +235,28 @@ ax.axhline(y = intensity.mean(), c='red', linestyle = 'dotted')
 ax.axhline(y = 5*intensity.mean(), c='red', linestyle = 'dotted')
 """
 
-plt.show()
+#plt.show()
 
 
 #UI stuff here
 
-root = Tk()
-root.title("Peak Data")
-mainframe = ttk.Frame(root, padding = "3 3 12 12")
-mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
-ttk.Label(mainframe, text = params).grid(column = 0, row = 2, stick = (W,E))
-ttk.Button(master = mainframe, command = dataPlotter(spec), text = 'Plot').grid(column = 1, row = 2, stick = (N))
+window = Tk()
+window.title("Peak Data")
+window.geometry("750x750")
+plot_button = Button(master = window, command = dataPlotter, height = 2, width = 10, text = 'Plot')
+plot_button.pack()
+fit_button = Button(master = window, command = fitCurve, height = 2, width = 10, text = 'Fit')
+fit_button.pack()
+quit_button = Button(master = window, command = _quit, height = 2, width = 10, text = "Quit")
+quit_button.pack()
+#mainframe = ttk.Frame(root, padding = "3 3 12 12")
+#mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
+#root.columnconfigure(0, weight=1)
+#root.rowconfigure(0, weight=1)
+#ttk.Label(mainframe, text = params).grid(column = 0, row = 2, stick = (W,E))
+#ttk.Button(master = mainframe, command = dataPlotter(spec), text = 'Plot').grid(column = 1, row = 2, stick = (N))
 #ttk.Button(master = mainframe, command = fitCurve(spec, params), text = 'Fit').grid(column =1, row =2, stick = (W))
-ttk.Button(master = mainframe, command =_quit, text = 'Quit').grid(column = 1, row = 2, stick = (S))
+#ttk.Button(master = mainframe, command =_quit, text = 'Quit').grid(column = 1, row = 2, stick = (S))
 
 
-#root.mainloop()
+window.mainloop()
