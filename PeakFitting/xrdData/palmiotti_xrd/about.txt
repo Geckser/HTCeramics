@@ -1,0 +1,3 @@
+Row 1 starting at B1 indicates the annealing temperature in C
+Column 1 are the 2theta values
+All following columns contain intensity values for each scan at each temperature
