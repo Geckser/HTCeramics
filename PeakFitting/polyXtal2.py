@@ -10,7 +10,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-df = pd.read_csv('xrdData/915aluminumNum.csv') #read the csv file
+df = pd.read_csv('xrdData/ware_pzt/batch2postsinterPZT.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
 
@@ -73,7 +73,7 @@ def createModel(spec, params):
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks
     y = spec['y']
-    baseIntensity = 2*y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
+    baseIntensity = 1.25*y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
     dy = y.diff()
     #print(len(y)-endLastPeak)
     peakStart = -1
@@ -197,6 +197,7 @@ def fitCurve(): #fits the curve, BROKEN
     out.plot(data_kws={'markersize':  1})
     plt.xlabel('Two Theta')
     plt.ylabel('Intenisty')
+    plt.title('Second batch PZT')
     plt.show()
     fitReport(out)
     return out
@@ -213,6 +214,7 @@ def _quit(): #allows process to actually stop
 spec = specWriter()
 
 foundPeaks, params = updateParams(spec)
+#plt.plot(twoTheta, intensity)
 #mod, pars = createModel(spec, params)
 
 #out = mod.fit(intensity, pars, x= twoTheta)
@@ -221,9 +223,8 @@ foundPeaks, params = updateParams(spec)
 
 #plotting stuff below here
 #out.plot(data_kws={'markersize':  1})
-#plt.xlabel("Two Theta")
 #plt.ylabel("Intenisty")
-
+#plt.title("First Batch PZT, pre-sintering")
 #This plots where the peaks are. Useful for testing
 """
 fig, ax = plt.subplots()
