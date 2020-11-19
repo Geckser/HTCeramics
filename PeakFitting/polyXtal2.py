@@ -10,7 +10,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-df = pd.read_csv('xrdData/ware_pzt/batch2postsinterPZT.csv') #read the csv file
+df = pd.read_csv('xrdData/polyxtal.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
 
@@ -73,7 +73,7 @@ def createModel(spec, params):
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks
     y = spec['y']
-    baseIntensity = 1.25*y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
+    baseIntensity = 2*y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
     dy = y.diff()
     #print(len(y)-endLastPeak)
     peakStart = -1
