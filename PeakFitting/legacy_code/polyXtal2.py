@@ -75,13 +75,12 @@ def createModel(spec, params):
         
         else:
             print("Function not implemented")
-
     return mod, pars
 
 
 def peakFinder(spec, endLastPeak): #finds and counts peaks
     y = spec['y']
-    baseIntensity = 2*y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
+    baseIntensity = 2 * y.mean() #checks for a baseline, probabily have to set manually for each dataset since it is so dependent on the data set
     dy = y.diff()
     #print(len(y)-endLastPeak)
     peakStart = -1
@@ -125,7 +124,7 @@ def multiPeakFinder(spec): #runs peak finder for all the peaks
         peakData.append(peak)
         
     peakCount = len(peakData)
-    peakDataDF = pd.DataFrame(peakData, columns = ['Start', 'Max', 'End'])
+    peakDataDF = pd.DataFrame(peakData, columns=['Start', 'Max', 'End'])
     return peakDataDF, peakCount
 
 
