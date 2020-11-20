@@ -30,19 +30,19 @@ def createModel(spec, params):
     height = params['height']
     sigma = params['sigma']
     
-    gaussi = models.GaussianModel(prefix = 'gi_') #uses an empty gaussian function to initialaize the paramaters
-    pars = gaussi.make_params() #creates params dataset
+    gaussi = models.GaussianModel(prefix='gi_')  #uses an empty gaussian function to initialaize the paramaters
+    pars = gaussi.make_params()  #creates params dataset
     
     for i in peaks:
-        if basis_func[i] == 'GaussianModel': #checks if the peak is gaussian
-            prefix = 'g'+str(i)+'_'
-            gauss = models.GaussianModel(prefix = prefix)
+        if basis_func[i] == 'GaussianModel':  #checks if the peak is gaussian
+            prefix = 'g' + str(i) + '_'
+            gauss = models.GaussianModel(prefix=prefix)
             pars.update(gauss.make_params())
 
             pars[prefix + 'center'].set(center[i])
             pars[prefix + 'sigma'].set(sigma[i])
             pars[prefix + 'amplitude'].set(height[i])
-            if i == 0: #initiallizes the mod variable if it's the first model in the composite function
+            if i == 0:  #initiallizes the mod variable if it's the first model in the composite function
                 mod = gauss
             else:
                 mod = mod + gauss
@@ -94,7 +94,7 @@ def peakFinder(spec, endLastPeak): #finds and counts peaks
         return     
     
     for j in range(peakStart, len(dy)): #finds max peaks
-        if  dy[j] <= 0:
+        if dy[j] <= 0:
             if dy[j+1] <= 0 and dy[j+2] <= 0 and dy[j+3] <= 0:
                 peakMax = j
                 break
