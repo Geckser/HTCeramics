@@ -6,7 +6,7 @@ from sklearn.kernel_ridge import KernelRidge
 from sklearn.decomposition import KernelPCA
 
 
-data = pd.read_csv('../xrdData/915glassNum.csv')
+data = pd.read_csv('../xrdData/915+aluminum.csv')
 angle = np.array(data['Angle'])
 intensity = np.array(data['Intensity'])
 angle = np.reshape(angle, (-1, 1))

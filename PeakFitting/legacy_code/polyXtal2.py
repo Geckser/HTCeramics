@@ -10,7 +10,7 @@ from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-df = pd.read_csv('../xrdData/ware_pzt/pzt1Num.csv') #read the csv file
+df = pd.read_csv('../xrdData/915 aluminum.csv') #read the csv file
 twoTheta = df["Angle"] #assigns angle column
 intensity = df["Intensity"] #assigns intensity column 
 
